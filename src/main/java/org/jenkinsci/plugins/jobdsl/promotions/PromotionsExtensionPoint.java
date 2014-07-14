@@ -18,17 +18,8 @@ import java.util.ArrayList;
 @Extension
 public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
-	static {
-		System.out.println("hier promotions");
-	}
-
-	public PromotionsExtensionPoint() {
-		System.out.println("inst");
-	}
-
 	@DslMethod(context = PropertiesContext.class)
 	public String promotion(Runnable closure) {
-		System.out.println("promo");
         PromotionsContextHelper contextHelper = new PromotionsContextHelper(new ArrayList<WithXmlAction>(), null);
 		String name = contextHelper.promotion((Closure) closure);
         DslSession.getCurrentSession().setData("helper", contextHelper);
@@ -41,7 +32,6 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
         PromotionsContextHelper contextHelper = (PromotionsContextHelper)DslSession.getCurrentSession().getData("helper");
         String name = (String)DslSession.getCurrentSession().getData("name");
         String xml = contextHelper.getSubXml();
-        System.out.println("item created: " + xml);
 		File dir = new File(item.getRootDir(),  "promotions/" + name);
         File configXml = Items.getConfigFile(dir).getFile();
         configXml.getParentFile().mkdirs();
