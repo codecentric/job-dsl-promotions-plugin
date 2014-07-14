@@ -18,21 +18,21 @@ import java.util.ArrayList;
 @Extension
 public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
-	@DslMethod(context = PropertiesContext.class)
-	public String promotion(Runnable closure) {
+    @DslMethod(context = PropertiesContext.class)
+    public String promotion(Runnable closure) {
         PromotionsContextHelper contextHelper = new PromotionsContextHelper(new ArrayList<WithXmlAction>(), null);
-		String name = contextHelper.promotion((Closure) closure);
+        String name = contextHelper.promotion((Closure) closure);
         DslSession.getCurrentSession().setData("helper", contextHelper);
         DslSession.getCurrentSession().setData("name", name);
-		return contextHelper.getXml();
-	}
+        return contextHelper.getXml();
+    }
 
-	@Override
-	public void notifyItemCreated(Item item) {
-        PromotionsContextHelper contextHelper = (PromotionsContextHelper)DslSession.getCurrentSession().getData("helper");
-        String name = (String)DslSession.getCurrentSession().getData("name");
+    @Override
+    public void notifyItemCreated(Item item) {
+        PromotionsContextHelper contextHelper = (PromotionsContextHelper) DslSession.getCurrentSession().getData("helper");
+        String name = (String) DslSession.getCurrentSession().getData("name");
         String xml = contextHelper.getSubXml();
-		File dir = new File(item.getRootDir(),  "promotions/" + name);
+        File dir = new File(item.getRootDir(), "promotions/" + name);
         File configXml = Items.getConfigFile(dir).getFile();
         configXml.getParentFile().mkdirs();
         try {
@@ -45,12 +45,12 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
         }
     }
 
-	@Override
-	public void notifyItemUpdated(Item item) {
-		System.out.println("item updated: " + item);
-		// new File(configId.getType().toString() +
-		// configId.getRelativePath().replace("/", "_") + jobName +
-		// ext).write(config.getConfig(configId));
-	}
+    @Override
+    public void notifyItemUpdated(Item item) {
+        System.out.println("item updated: " + item);
+        // new File(configId.getType().toString() +
+        // configId.getRelativePath().replace("/", "_") + jobName +
+        // ext).write(config.getConfig(configId));
+    }
 
 }
