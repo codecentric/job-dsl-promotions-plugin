@@ -22,6 +22,7 @@ class PromotionsExtensionPointSpec extends Specification {
 
 	def 'promotionJobExtension'() {
 		when:
+        DslSession.setCurrentSession(new DslSession())
 		String xml = extensionPoint.promotion({
 			promotion {
                 name('dev')
