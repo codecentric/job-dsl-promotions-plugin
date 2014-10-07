@@ -60,10 +60,10 @@ class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
     }
 
     String getXml() {
-        getXml(node)
+        getNodeXml(node)
     }
 
-    private getXml(Node node) {
+    private getNodeXml(Node node) {
         Writer xmlOutput = new StringWriter()
         XmlNodePrinter xmlNodePrinter = new XmlNodePrinter(new PrintWriter(xmlOutput), '    ')
         xmlNodePrinter.with {
@@ -77,7 +77,7 @@ class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
     }
 
     String getSubXml() {
-        getXml(subNode)
+        getNodeXml(subNode)
     }
 
     Node getSubNode() {
