@@ -1,1 +1,6 @@
 /target/
+/work
+/job-dsl-promotions.iml
+/.idea
+/.settings
+/.project
