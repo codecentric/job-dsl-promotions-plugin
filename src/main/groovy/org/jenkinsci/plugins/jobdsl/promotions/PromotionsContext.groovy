@@ -16,11 +16,11 @@ import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
 
 class PromotionsContext implements Context {
 
-    Node promotionNode
+    List<Node> promotionNodes = []
 
-    Node subPromotionNode
+    Map<String, Node> subPromotionNodes = [:]
 
-    String name
+    List<String> names = []
 
     /**
      * PromotionNodes:
@@ -53,10 +53,10 @@ class PromotionsContext implements Context {
         Preconditions.checkNotNull(promotionContext.name, 'promotion name cannot be null')
         Preconditions.checkArgument(promotionContext.name.length() > 0)
 
-        name = promotionContext.name
-        promotionNode = new Node(null, 'string', name)
+        def name = promotionContext.name
+        def promotionNode = new Node(null, 'string', name)
 
-        subPromotionNode = new NodeBuilder().'project' {
+        def subPromotionNode = new NodeBuilder().'project' {
             // Conditions to proof before promotion
             if (promotionContext.conditions) {
                 promotionContext.conditions.each {ConditionsContext condition ->
@@ -81,6 +81,11 @@ class PromotionsContext implements Context {
             promotionContext.actions.each { steps.append(it) }
         }
         subPromotionNode.append(steps)
+
+        // Fill Lists and Maps
+        names << name
+        promotionNodes << promotionNode
+        subPromotionNodes.put(name, subPromotionNode)
     }
 
 }

@@ -15,18 +15,22 @@ import spock.lang.Specification
 
 class PromotionsExtensionPointSpec extends Specification {
 
-	@Rule
-	JenkinsRule jenkinsRule = new JenkinsRule()
+    @Rule
+    JenkinsRule jenkinsRule = new JenkinsRule()
 
-	PromotionsExtensionPoint extensionPoint = new PromotionsExtensionPoint()
+    PromotionsExtensionPoint extensionPoint = new PromotionsExtensionPoint()
 
 	def 'promotionJobExtension'() {
 		when:
-        DslSession.setCurrentSession(new DslSession())
-		String xml = extensionPoint.promotion({
-			promotion {
+		String xml = extensionPoint.promotions({
+            promotion {
                 name('dev')
-			}
+                icon('star')
+            }
+            promotion {
+                name('dev2')
+                icon('star')
+            }
 		})
 
 		then:
@@ -35,14 +39,14 @@ class PromotionsExtensionPointSpec extends Specification {
 <hudson.plugins.promoted__builds.JobPropertyImpl>
     <activeProcessNames>
         <string>dev</string>
+        <string>dev2</string>
     </activeProcessNames>
 </hudson.plugins.promoted__builds.JobPropertyImpl>''', xml)
 	}
 
     def 'promotionExtraXml'() {
         when:
-        DslSession.setCurrentSession(new DslSession())
-        extensionPoint.promotion({
+        extensionPoint.promotions({
             promotion {
                 name('dev')
                 icon('star')
@@ -51,6 +55,16 @@ class PromotionsExtensionPointSpec extends Specification {
                 }
                 actions {
                     shell('echo hallo;')
+                }
+            }
+            promotion {
+                name('dev2')
+                icon('star')
+                conditions {
+                    manual('name')
+                }
+                actions {
+                    shell('echo adios;')
                 }
             }
         })

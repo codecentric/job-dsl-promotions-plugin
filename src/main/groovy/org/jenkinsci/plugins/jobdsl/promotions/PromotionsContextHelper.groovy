@@ -1,40 +1,49 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
+import groovy.json.JsonOutput
 import javaposse.jobdsl.dsl.JobType
 import javaposse.jobdsl.dsl.WithXmlAction
 import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
 import javaposse.jobdsl.plugin.api.DslSession
+import org.apache.commons.lang.builder.ToStringBuilder
 
 class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
 
-    List<WithXmlAction> subWithXmlActions = []
+    List<Map<String, WithXmlAction>> subWithXmlActions = []
 
     PromotionsContextHelper(List<WithXmlAction> withXmlActions, JobType jobType) {
         super(withXmlActions, jobType)
     }
 
-    String promotion(Closure closure) {
+    List<String> promotions(Closure closure) {
         PromotionsContext context = new PromotionsContext()
         execute(closure, context)
-        return context.name
+        return context.names
     }
 
     @Override
     Closure generateWithXmlClosure(PromotionsContext context) {
         return { Node property ->
             def promotions = property / 'activeProcessNames'
-            promotions << context.promotionNode
+            context.promotionNodes.each {
+                promotions << it
+            }
         }
     }
 
-    Closure generateSubWithXmlClosures(PromotionsContext context) {
-       return { Node project ->
-            def promotion = project
-            context.subPromotionNode.children().each {
-                def name = it.name()
-                appendOrReplaceNode(promotion, name, it)
+    Map<String, Closure> generateSubWithXmlClosures(PromotionsContext context) {
+        Map<String, Closure> closureMap = [:]
+        context.subPromotionNodes.keySet().each {
+            def clos = { Node project ->
+                def promotion = project
+                context.subPromotionNodes.get(it).children().each {
+                     def name = it.name()
+                     appendOrReplaceNode(promotion, name, it)
+                }
             }
+            closureMap.put(it, clos)
         }
+        return closureMap
     }
 
     private void appendOrReplaceNode(Node node, String name, Node replace) {
@@ -76,20 +85,20 @@ class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
         xmlOutput.toString()
     }
 
-    String getSubXml() {
-        getNodeXml(subNode)
+    String getSubXml(String name) {
+        getNodeXml(getSubNode(name))
     }
 
-    Node getSubNode() {
+    Node getSubNode(String name) {
         Node project = executeEmptyTemplate(xmlPromotion)
-        executeSubWithXmlActions(project)
+        executeSubWithXmlActions(project, name)
         project
     }
 
-    void executeSubWithXmlActions(final Node root) {
+    void executeSubWithXmlActions(final Node root, String name) {
         // Create builder, based on what we already have
-        subWithXmlActions.each { WithXmlAction withXmlClosure ->
-            withXmlClosure.execute(root)
+        subWithXmlActions.each { Map<String, WithXmlAction> withXmlClosureMap ->
+            withXmlClosureMap.get(name).execute(root)
         }
     }
 
@@ -103,11 +112,15 @@ class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
         return freshContext
     }
 
-    WithXmlAction generateSubWithXmlActions(PromotionsContext context) {
+    Map<String, WithXmlAction> generateSubWithXmlActions(PromotionsContext context) {
         // Closure to be run later, in this context we're given the root node with the WithXmlAction magic
-        Closure withXmlClosure = generateSubWithXmlClosures(context)
+        Map<String, Closure> withXmlClosure = generateSubWithXmlClosures(context)
 
-        return new WithXmlAction(withXmlClosure)
+        Map<String, WithXmlAction> map = [:]
+        withXmlClosure.keySet().each {
+            map.put(it, new WithXmlAction(withXmlClosure.get(it)))
+        }
+        return map
     }
 
     def xmlProperty = '''
