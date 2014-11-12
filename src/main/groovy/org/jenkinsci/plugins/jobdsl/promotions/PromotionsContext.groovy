@@ -1,26 +1,23 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
-import groovy.lang.Closure
-import groovy.util.Node
-
-import java.util.List
-
-import javaposse.jobdsl.dsl.WithXmlAction
+import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.helpers.Context
-import javaposse.jobdsl.dsl.helpers.common.DownstreamTriggerContext
-import javaposse.jobdsl.dsl.helpers.step.AbstractStepContext
-
 import com.google.common.base.Preconditions
-
 import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
 
 class PromotionsContext implements Context {
+
+    JobManagement jobManagement
 
     List<Node> promotionNodes = []
 
     Map<String, Node> subPromotionNodes = [:]
 
     List<String> names = []
+
+    PromotionsContext(JobManagement jobManagement) {
+        this.jobManagement = jobManagement
+    }
 
     /**
      * PromotionNodes:
@@ -47,7 +44,7 @@ class PromotionsContext implements Context {
      * @return
      */
     def promotion(Closure promotionClosure = null) {
-        PromotionContext promotionContext = new PromotionContext()
+        PromotionContext promotionContext = new PromotionContext(jobManagement)
         AbstractContextHelper.executeInContext(promotionClosure, promotionContext)
 
         Preconditions.checkNotNull(promotionContext.name, 'promotion name cannot be null')

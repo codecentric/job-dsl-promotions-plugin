@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
 import groovy.json.JsonOutput
+import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.JobType
 import javaposse.jobdsl.dsl.WithXmlAction
 import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
@@ -9,14 +10,17 @@ import org.apache.commons.lang.builder.ToStringBuilder
 
 class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
 
+    JobManagement jobManagement
+
     List<Map<String, WithXmlAction>> subWithXmlActions = []
 
-    PromotionsContextHelper(List<WithXmlAction> withXmlActions, JobType jobType) {
+    PromotionsContextHelper(List<WithXmlAction> withXmlActions, JobType jobType, JobManagement jobManagement) {
         super(withXmlActions, jobType)
+        this.jobManagement = jobManagement
     }
 
     List<String> promotions(Closure closure) {
-        PromotionsContext context = new PromotionsContext()
+        PromotionsContext context = new PromotionsContext(jobManagement)
         execute(closure, context)
         return context.names
     }

@@ -23,7 +23,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
     @DslMethod(context = PropertiesContext.class)
     public Object promotions(Runnable closure) {
         //System.out.println("promotion: " + groovy.json.JsonOutput.toJson(closure));
-        PromotionsContextHelper contextHelper = new PromotionsContextHelper(new ArrayList<WithXmlAction>(), null);
+        PromotionsContextHelper contextHelper = new PromotionsContextHelper(new ArrayList<WithXmlAction>(), null, null);
         List<String> names = contextHelper.promotions((Closure) closure);
         DslSession.getCurrentSession().setData("helper", contextHelper);
         DslSession.getCurrentSession().setData("names", names);

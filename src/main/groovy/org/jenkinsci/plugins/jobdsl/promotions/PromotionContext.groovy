@@ -1,10 +1,13 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
+import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
 import javaposse.jobdsl.dsl.helpers.Context
-import javaposse.jobdsl.dsl.helpers.step.AbstractStepContext
+import javaposse.jobdsl.dsl.helpers.step.StepContext
 
 class PromotionContext implements Context {
+
+    private JobManagement jobManagement
 
     private List<ConditionsContext> conditions = []
 
@@ -15,6 +18,10 @@ class PromotionContext implements Context {
     private String restrict
 
     private String name
+
+    PromotionContext(JobManagement jobManagement) {
+        this.jobManagement = jobManagement
+    }
 
     def name(String name) {
        this.name = name
@@ -37,7 +44,7 @@ class PromotionContext implements Context {
 
     def actions(Closure actionsClosure) {
         // delegate to ConditionsContext
-        AbstractStepContext actionsContext = new AbstractStepContext()
+        StepContext actionsContext = new StepContext(jobManagement)
         AbstractContextHelper.executeInContext(actionsClosure, actionsContext)
         actionsContext.stepNodes.each { actions << it }
     }
