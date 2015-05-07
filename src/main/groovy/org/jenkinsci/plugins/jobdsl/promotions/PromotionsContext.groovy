@@ -1,13 +1,16 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
+import javaposse.jobdsl.dsl.Context
+import javaposse.jobdsl.dsl.ContextHelper
+import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.JobManagement
-import javaposse.jobdsl.dsl.helpers.Context
 import com.google.common.base.Preconditions
-import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
 
 class PromotionsContext implements Context {
 
     JobManagement jobManagement
+
+    Job job
 
     List<Node> promotionNodes = []
 
@@ -15,8 +18,9 @@ class PromotionsContext implements Context {
 
     List<String> names = []
 
-    PromotionsContext(JobManagement jobManagement) {
+    PromotionsContext(JobManagement jobManagement, Job job) {
         this.jobManagement = jobManagement
+        this.job = job
     }
 
     /**
@@ -44,8 +48,8 @@ class PromotionsContext implements Context {
      * @return
      */
     def promotion(Closure promotionClosure = null) {
-        PromotionContext promotionContext = new PromotionContext(jobManagement)
-        AbstractContextHelper.executeInContext(promotionClosure, promotionContext)
+        PromotionContext promotionContext = new PromotionContext(jobManagement, job)
+        ContextHelper.executeInContext(promotionClosure, promotionContext)
 
         Preconditions.checkNotNull(promotionContext.name, 'promotion name cannot be null')
         Preconditions.checkArgument(promotionContext.name.length() > 0)

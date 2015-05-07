@@ -1,31 +1,32 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
-import groovy.json.JsonOutput
+import javaposse.jobdsl.dsl.ContextHelper
+import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.JobType
 import javaposse.jobdsl.dsl.WithXmlAction
-import javaposse.jobdsl.dsl.helpers.AbstractContextHelper
-import javaposse.jobdsl.plugin.api.DslSession
-import org.apache.commons.lang.builder.ToStringBuilder
 
-class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
+class PromotionsContextHelper {
 
     JobManagement jobManagement
 
+    Job job
+
+    List<WithXmlAction> withXmlActions = []
+
     List<Map<String, WithXmlAction>> subWithXmlActions = []
 
-    PromotionsContextHelper(List<WithXmlAction> withXmlActions, JobType jobType, JobManagement jobManagement) {
-        super(withXmlActions, jobType)
+    PromotionsContextHelper(JobManagement jobManagement, Job job) {
         this.jobManagement = jobManagement
+        this.job = job;
     }
 
     List<String> promotions(Closure closure) {
-        PromotionsContext context = new PromotionsContext(jobManagement)
+        PromotionsContext context = new PromotionsContext(jobManagement, job)
         execute(closure, context)
         return context.names
     }
 
-    @Override
     Closure generateWithXmlClosure(PromotionsContext context) {
         return { Node property ->
             def promotions = property / 'activeProcessNames'
@@ -106,9 +107,12 @@ class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
         }
     }
 
-    @Override
     def execute(Closure closure, PromotionsContext freshContext) {
-        super.execute(closure, freshContext)
+        // Execute context, which we expect will just establish some state
+        ContextHelper.executeInContext(closure, freshContext)
+
+        // Queue up our action, using the concrete classes logic
+        withXmlActions << generateWithXmlAction(freshContext)
 
         // Add promotions actions for each promotion in the context
         subWithXmlActions << generateSubWithXmlActions(freshContext)
@@ -125,6 +129,13 @@ class PromotionsContextHelper extends AbstractContextHelper<PromotionsContext> {
             map.put(it, new WithXmlAction(withXmlClosure.get(it)))
         }
         return map
+    }
+
+    WithXmlAction generateWithXmlAction(PromotionsContext context) {
+        // Closure to be run later, in this context we're given the root node with the WithXmlAction magic
+        Closure withXmlClosure = generateWithXmlClosure(context)
+
+        new WithXmlAction(withXmlClosure)
     }
 
     def xmlProperty = '''

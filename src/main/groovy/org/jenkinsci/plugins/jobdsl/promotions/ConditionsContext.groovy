@@ -1,13 +1,8 @@
 package org.jenkinsci.plugins.jobdsl.promotions
 
-import groovy.lang.Closure;
-import javaposse.jobdsl.dsl.helpers.AbstractContextHelper;
-import javaposse.jobdsl.dsl.helpers.BuildParametersContext;
-import javaposse.jobdsl.dsl.helpers.Context;
-
-import java.util.List;
-
-import javaposse.jobdsl.dsl.helpers.common.DownstreamTriggerContext;
+import javaposse.jobdsl.dsl.Context
+import javaposse.jobdsl.dsl.ContextHelper
+import javaposse.jobdsl.dsl.helpers.BuildParametersContext
 
 class ConditionsContext implements Context {
 
@@ -67,7 +62,7 @@ class ConditionsContext implements Context {
     def parameters(Closure parametersClosure) {
         // delegate to main BuildParametersContext
         BuildParametersContext parametersContext = new BuildParametersContext()
-        AbstractContextHelper.executeInContext(parametersClosure, parametersContext)
+        ContextHelper.executeInContext(parametersClosure, parametersContext)
         parametersContext.buildParameterNodes.values().each { params << it }
     }
 
