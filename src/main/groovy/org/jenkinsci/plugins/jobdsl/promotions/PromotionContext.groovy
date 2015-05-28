@@ -2,15 +2,13 @@ package org.jenkinsci.plugins.jobdsl.promotions
 
 import javaposse.jobdsl.dsl.Context
 import javaposse.jobdsl.dsl.ContextHelper
+import javaposse.jobdsl.dsl.FileJobManagement
 import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.helpers.step.StepContext
+import org.apache.commons.io.FileUtils
 
 class PromotionContext implements Context {
-
-    private JobManagement jobManagement
-
-    private Job job
 
     private List<ConditionsContext> conditions = []
 
@@ -22,9 +20,7 @@ class PromotionContext implements Context {
 
     private String name
 
-    PromotionContext(JobManagement jobManagement, Job job) {
-        this.jobManagement = jobManagement
-        this.job = job
+    PromotionContext() {
     }
 
     def name(String name) {
@@ -47,10 +43,10 @@ class PromotionContext implements Context {
     }
 
     def actions(Closure actionsClosure) {
-        // delegate to ConditionsContext
-        StepContext actionsContext = new StepContext(jobManagement, job)
-        ContextHelper.executeInContext(actionsClosure, actionsContext)
-        actionsContext.stepNodes.each { actions << it }
+        // delegate to StepContext
+        StepContext stepContext = new StepContext(new FileJobManagement(FileUtils.getTempDirectory()), null)
+        ContextHelper.executeInContext(actionsClosure, stepContext)
+        stepContext.stepNodes.each { actions << it }
     }
 
 }

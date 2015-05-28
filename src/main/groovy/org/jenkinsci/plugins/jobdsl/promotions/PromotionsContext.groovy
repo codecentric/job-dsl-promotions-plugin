@@ -8,19 +8,13 @@ import com.google.common.base.Preconditions
 
 class PromotionsContext implements Context {
 
-    JobManagement jobManagement
-
-    Job job
-
     List<Node> promotionNodes = []
 
     Map<String, Node> subPromotionNodes = [:]
 
     List<String> names = []
 
-    PromotionsContext(JobManagement jobManagement, Job job) {
-        this.jobManagement = jobManagement
-        this.job = job
+    PromotionsContext() {
     }
 
     /**
@@ -48,7 +42,7 @@ class PromotionsContext implements Context {
      * @return
      */
     def promotion(Closure promotionClosure = null) {
-        PromotionContext promotionContext = new PromotionContext(jobManagement, job)
+        PromotionContext promotionContext = new PromotionContext()
         ContextHelper.executeInContext(promotionClosure, promotionContext)
 
         Preconditions.checkNotNull(promotionContext.name, 'promotion name cannot be null')

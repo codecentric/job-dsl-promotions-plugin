@@ -8,21 +8,15 @@ import javaposse.jobdsl.dsl.WithXmlAction
 
 class PromotionsContextHelper {
 
-    JobManagement jobManagement
-
-    Job job
-
     List<WithXmlAction> withXmlActions = []
 
     List<Map<String, WithXmlAction>> subWithXmlActions = []
 
-    PromotionsContextHelper(JobManagement jobManagement, Job job) {
-        this.jobManagement = jobManagement
-        this.job = job;
+    PromotionsContextHelper() {
     }
 
     List<String> promotions(Closure closure) {
-        PromotionsContext context = new PromotionsContext(jobManagement, job)
+        PromotionsContext context = new PromotionsContext()
         execute(closure, context)
         return context.names
     }

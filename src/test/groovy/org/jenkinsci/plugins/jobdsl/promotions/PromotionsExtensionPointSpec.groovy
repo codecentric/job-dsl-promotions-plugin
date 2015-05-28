@@ -4,6 +4,8 @@ import hudson.model.FreeStyleProject
 import javaposse.jobdsl.plugin.DslEnvironment
 import javaposse.jobdsl.plugin.DslEnvironmentImpl
 import jenkins.model.Jenkins
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang.StringUtils
 import org.junit.Rule
 import org.jvnet.hudson.test.JenkinsRule
 import spock.lang.Specification
@@ -45,7 +47,7 @@ class PromotionsExtensionPointSpec extends Specification {
     def 'promotionExtraXml'() {
         when:
         DslEnvironment dslEnvironment = new DslEnvironmentImpl();
-        extensionPoint.promotions({
+        String xml = extensionPoint.promotions({
             promotion {
                 name('dev')
                 icon('star')
@@ -71,6 +73,69 @@ class PromotionsExtensionPointSpec extends Specification {
         extensionPoint.notifyItemCreated(item, dslEnvironment)
 
         then:
-        true
+        println xml
+        assertXMLEqual('''
+<hudson.plugins.promoted__builds.JobPropertyImpl>
+    <activeProcessNames>
+        <string>dev</string>
+        <string>dev2</string>
+    </activeProcessNames>
+</hudson.plugins.promoted__builds.JobPropertyImpl>''', xml)
+
+        String xmlDev = FileUtils.readFileToString(new File(item.getRootDir(), '/promotions/dev/config.xml'));
+        println xmlDev
+        assertXMLEqual('''
+<hudson.plugins.promoted__builds.PromotionProcess plugin='promoted-builds@2.15'>
+    <actions></actions>
+    <keepDependencies>false</keepDependencies>
+    <properties></properties>
+    <scm class='hudson.scm.NullSCM'></scm>
+    <canRoam>false</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers></triggers>
+    <concurrentBuild>false</concurrentBuild>
+    <conditions>
+        <hudson.plugins.promoted__builds.conditions.ManualCondition>
+            <users>name</users>
+            <parameterDefinitions></parameterDefinitions>
+        </hudson.plugins.promoted__builds.conditions.ManualCondition>
+    </conditions>
+    <icon>star</icon>
+    <buildSteps>
+        <hudson.tasks.Shell>
+            <command>echo hallo;</command>
+        </hudson.tasks.Shell>
+    </buildSteps>
+</hudson.plugins.promoted__builds.PromotionProcess>''', xmlDev)
+
+        String xmlDev2 = FileUtils.readFileToString(new File(item.getRootDir(), '/promotions/dev2/config.xml'));
+        println xmlDev2
+        assertXMLEqual('''
+<hudson.plugins.promoted__builds.PromotionProcess plugin='promoted-builds@2.15'>
+    <actions></actions>
+    <keepDependencies>false</keepDependencies>
+    <properties></properties>
+    <scm class='hudson.scm.NullSCM'></scm>
+    <canRoam>false</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers></triggers>
+    <concurrentBuild>false</concurrentBuild>
+    <conditions>
+        <hudson.plugins.promoted__builds.conditions.ManualCondition>
+            <users>name</users>
+            <parameterDefinitions></parameterDefinitions>
+        </hudson.plugins.promoted__builds.conditions.ManualCondition>
+    </conditions>
+    <icon>star</icon>
+    <buildSteps>
+        <hudson.tasks.Shell>
+            <command>echo adios;</command>
+        </hudson.tasks.Shell>
+    </buildSteps>
+</hudson.plugins.promoted__builds.PromotionProcess>''', xmlDev2)
     }
 }

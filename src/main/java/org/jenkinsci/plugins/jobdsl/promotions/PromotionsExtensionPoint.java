@@ -5,11 +5,14 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Items;
 import hudson.util.IOUtils;
+import javaposse.jobdsl.dsl.FileJobManagement;
 import javaposse.jobdsl.dsl.WithXmlAction;
 import javaposse.jobdsl.dsl.helpers.properties.PropertiesContext;
 import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import javaposse.jobdsl.plugin.DslEnvironment;
 import javaposse.jobdsl.plugin.DslExtensionMethod;
+import javaposse.jobdsl.plugin.JenkinsJobManagement;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,8 +23,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
     @DslExtensionMethod(context = PropertiesContext.class)
     public Object promotions(Runnable closure, DslEnvironment dslEnvironment) {
-        //System.out.println("promotion: " + groovy.json.JsonOutput.toJson(closure));
-        PromotionsContextHelper contextHelper = new PromotionsContextHelper(null, null);
+        PromotionsContextHelper contextHelper = new PromotionsContextHelper();
         List<String> names = contextHelper.promotions((Closure) closure);
         dslEnvironment.put("helper", contextHelper);
         dslEnvironment.put("names", names);
@@ -30,7 +32,6 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
     @Override
     public void notifyItemCreated(Item item, DslEnvironment dslEnvironment) {
-        System.out.println("item created: " + item);
         PromotionsContextHelper contextHelper = (PromotionsContextHelper) dslEnvironment.get("helper");
         List<String> names = (List<String>) dslEnvironment.get("names");
         for (String name : names) {
@@ -41,6 +42,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
             try {
                 InputStream in = new ByteArrayInputStream(xml.getBytes("UTF-8"));
                 IOUtils.copy(in, configXml);
+                // System.out.println(FileUtils.readFileToString(configXml));
             } catch (UnsupportedEncodingException e) {
                 throw new IllegalStateException("Error handling extension code", e);
             } catch (IOException e) {
