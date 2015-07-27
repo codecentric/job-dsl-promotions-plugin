@@ -1,5 +1,6 @@
 # Example DSL to generate Promotions
 
+```groovy
 job{
 	name('promotion-job')
 	properties{
@@ -15,3 +16,4 @@ job{
 		}
 	}
 }
+```
