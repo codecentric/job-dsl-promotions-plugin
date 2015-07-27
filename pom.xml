@@ -4,25 +4,24 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.565</version><!-- which version of Jenkins is this plugin
-			built against? Users must have at least this Jenkins version to use this 
-			plugin. -->
+		<version>1.565</version><!-- which version of Jenkins is this plugin built 
+			against? Users must have at least this Jenkins version to use this plugin. -->
 	</parent>
-
 	<artifactId>job-dsl-promotions</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>job-dsl</artifactId>
-			<version>1.33</version>
+			<version>1.35</version>
+			<type>jar</type>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>1.8.6</version>
+			<version>1.8.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.spockframework</groupId>
@@ -47,13 +46,40 @@
 						<include>**/*Test.java</include>
 						<include>**/*Spec.java</include>
 					</includes>
+					<excludes>
+						<exclude>InjectedTest.java</exclude>
+					</excludes>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<configuration>
+					<providerSelection>1.8</providerSelection>
+				</configuration>
+				<executions>
+					<execution>
+						<id>test-in-groovy</id>
+						<!-- allow tests written in Groovy -->
+						<goals>
+							<goal>generateTestStubs</goal>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.gmavenplus</groupId>
 				<artifactId>gmavenplus-plugin</artifactId>
-				<version>1.2</version>
+				<version>1.5</version>
 				<executions>
 					<execution>
 						<goals>
@@ -68,11 +94,28 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<sources>
+						<source>
+							<directory>${project.basedir}/src/main/groovy</directory>
+							<includes>
+								<include>**/*.groovy</include>
+							</includes>
+						</source>
+					</sources>
+					<testSources>
+						<testSource>
+							<directory>${project.basedir}/src/test/groovy</directory>
+							<includes>
+								<include>**/*.groovy</include>
+							</includes>
+						</testSource>
+					</testSources>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -80,14 +123,12 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<licenses>
 		<license>
 			<name>MIT License</name>
 			<url>http://opensource.org/licenses/MIT</url>
 		</license>
 	</licenses>
-
 	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the 
 		artifacts that we need -->
 	<repositories>
@@ -96,12 +137,10 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
 	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
-
 </project>
