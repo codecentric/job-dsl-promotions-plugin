@@ -1,0 +1,24 @@
+<hudson.plugins.promoted__builds.PromotionProcess plugin='promoted-builds@2.15'>
+    <actions></actions>
+    <keepDependencies>false</keepDependencies>
+    <properties></properties>
+    <scm class='hudson.scm.NullSCM'></scm>
+    <canRoam>false</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers></triggers>
+    <concurrentBuild>false</concurrentBuild>
+    <conditions>
+        <hudson.plugins.promoted__builds.conditions.ManualCondition>
+            <users>name</users>
+            <parameterDefinitions></parameterDefinitions>
+        </hudson.plugins.promoted__builds.conditions.ManualCondition>
+    </conditions>
+    <icon>star</icon>
+    <buildSteps>
+        <hudson.tasks.Shell>
+            <command>echo hallo;</command>
+        </hudson.tasks.Shell>
+    </buildSteps>
+</hudson.plugins.promoted__builds.PromotionProcess>

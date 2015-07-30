@@ -6,13 +6,15 @@ job{
 	properties{
 		promotions{
 			promotion {
-			    name('dev')
-			    icon('star')
-			}
-			promotion {
-			    name('dev2')
-			    icon('star')
-			}
+                name('dev')
+                icon('star')
+                conditions {
+                    manual('name')
+                }
+                actions {
+                    shell('echo hallo;')
+                }
+            }
 		}
 	}
 }
