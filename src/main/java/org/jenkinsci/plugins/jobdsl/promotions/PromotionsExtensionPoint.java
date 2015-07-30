@@ -4,6 +4,7 @@ import groovy.lang.Closure;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Items;
+import hudson.model.Descriptor.FormException;
 import hudson.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -22,12 +23,13 @@ import javaposse.jobdsl.plugin.DslExtensionMethod;
 public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
 	@DslExtensionMethod(context = PropertiesContext.class)
-	public Object promotions(Runnable closure, DslEnvironment dslEnvironment) {
+	public Object promotions(Runnable closure, DslEnvironment dslEnvironment) throws FormException, IOException {
 		PromotionsContextHelper contextHelper = new PromotionsContextHelper();
 		List<String> activeProcessNames = contextHelper.promotions((Closure) closure);
 		dslEnvironment.put("helper", contextHelper);
 		dslEnvironment.put("names", activeProcessNames);
-		return new JobProperty(activeProcessNames);
+		JobProperty jobProperty = new JobProperty(activeProcessNames);
+		return jobProperty;
 	}
 
 	@Override

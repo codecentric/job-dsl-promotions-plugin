@@ -10,9 +10,6 @@ public class JobProperty  {
 	
 	List<String> activeProcessNames = new ArrayList<String>();
 	
-	//FIXME This is not possible :-( @XStreamAsAttribute
-	//private String plugin = "promoted-builds@2.15";
-	
 	public JobProperty(List<String> activeProcessNames) {
 		this.activeProcessNames = activeProcessNames;
 	}
