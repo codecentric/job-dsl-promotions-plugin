@@ -1,11 +1,9 @@
 package org.jenkinsci.plugins.jobdsl.promotions;
 
 import groovy.lang.Closure;
-import groovy.util.NodeBuilder;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Items;
-import hudson.plugins.promoted__builds.JobPropertyImpl;
 import hudson.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -20,8 +18,6 @@ import javaposse.jobdsl.plugin.ContextExtensionPoint;
 import javaposse.jobdsl.plugin.DslEnvironment;
 import javaposse.jobdsl.plugin.DslExtensionMethod;
 
-import org.jenkinsci.plugins.jobdsl.promotions.PromotionsContextHelper;
-
 @Extension
 public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
@@ -31,8 +27,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 		List<String> activeProcessNames = contextHelper.promotions((Closure) closure);
 		dslEnvironment.put("helper", contextHelper);
 		dslEnvironment.put("names", activeProcessNames);
-		return new JobPropertyImpl(activeProcessNames);
-		//return contextHelper.getNode();
+		return new JobProperty(activeProcessNames);
 	}
 
 	@Override
