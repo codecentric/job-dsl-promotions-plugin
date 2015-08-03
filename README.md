@@ -1,6 +1,18 @@
-# Example DSL to generate Promotions
+# Promototed Builds Plugin Extension for the Jenkins Job DSL Plugin
 
-## Simple example
+This plugin is an extension for the existing [Job DSL Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Job+DSL+Plugin). With this extension it is possible to generate promotions with the Job DSL. See the [Promoted Builds Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Promoted+Builds+Plugin) for further informations about the meaning of Promotions for a Jenkins Job.
+
+## Build
+
+mvn clean install
+
+## Run
+
+mvn hpi:run
+
+## Usage
+
+### Simple example
 
 ```groovy
 job{
@@ -22,7 +34,7 @@ job{
 }
 ```
 
-## More complex example
+### More complex example
 
 ```groovy
 job{
