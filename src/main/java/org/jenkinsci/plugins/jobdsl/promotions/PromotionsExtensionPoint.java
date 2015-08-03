@@ -28,7 +28,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 		List<String> activeProcessNames = contextHelper.promotions((Closure) closure);
 		dslEnvironment.put("helper", contextHelper);
 		dslEnvironment.put("names", activeProcessNames);
-		JobProperty jobProperty = new JobProperty(activeProcessNames);
+		PromotionJobProperty jobProperty = new PromotionJobProperty(activeProcessNames);
 		return jobProperty;
 	}
 

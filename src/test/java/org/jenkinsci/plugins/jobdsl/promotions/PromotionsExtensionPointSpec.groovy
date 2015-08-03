@@ -22,7 +22,7 @@ class PromotionsExtensionPointSpec extends Specification {
 	def 'promotionJobExtension'() {
 		when:
         DslEnvironment dslEnvironment = new DslEnvironmentImpl();
-		JobProperty jobProperty = extensionPoint.promotions({
+		PromotionJobProperty jobProperty = extensionPoint.promotions({
             promotion {
                 name('dev')
                 icon('star')
@@ -42,7 +42,7 @@ class PromotionsExtensionPointSpec extends Specification {
     def 'promotionExtraXml'() {
         when:
         DslEnvironment dslEnvironment = new DslEnvironmentImpl();
-        JobProperty jobProperty = extensionPoint.promotions({
+        PromotionJobProperty jobProperty = extensionPoint.promotions({
             promotion {
                 name('dev')
                 icon('star')
