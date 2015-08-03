@@ -21,7 +21,7 @@ job{
 		promotions{
 			promotion {
                 name('dev')
-                icon('star')
+                icon('star-gold')
                 conditions {
                     manual('developer')
                 }
