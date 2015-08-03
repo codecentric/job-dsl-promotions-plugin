@@ -1,0 +1,62 @@
+<hudson.plugins.promoted__builds.PromotionProcess plugin='promoted-builds@2.15'>
+    <actions></actions>
+    <keepDependencies>false</keepDependencies>
+    <properties></properties>
+    <scm class='hudson.scm.NullSCM'></scm>
+    <canRoam>false</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers></triggers>
+    <concurrentBuild>false</concurrentBuild>
+    <conditions>
+        <hudson.plugins.promoted__builds.conditions.ManualCondition>
+            <users>changemanager</users>
+            <parameterDefinitions></parameterDefinitions>
+        </hudson.plugins.promoted__builds.conditions.ManualCondition>
+    </conditions>
+    <icon>star-green</icon>
+    <buildSteps>
+        <hudson.plugins.parameterizedtrigger.TriggerBuilder>
+            <configs>
+                <hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+                    <projects>deploy-job</projects>
+                    <condition>ALWAYS</condition>
+                    <triggerWithNoParameters>false</triggerWithNoParameters>
+                    <configs>
+                        <hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+                            <properties>JOB_NAME=${PROMOTED_JOB_FULL_NAME}
+BUILD_ID=${PROMOTED_NUMBER}</properties>
+                        </hudson.plugins.parameterizedtrigger.PredefinedBuildParameters>
+                    </configs>
+                    <block>
+                        <buildStepFailureThreshold>
+                            <name>FAILURE</name>
+                            <ordinal>2</ordinal>
+                            <color>RED</color>
+                        </buildStepFailureThreshold>
+                        <failureThreshold>
+                            <name>FAILURE</name>
+                            <ordinal>2</ordinal>
+                            <color>RED</color>
+                        </failureThreshold>
+                        <unstableThreshold>
+                            <name>UNSTABLE</name>
+                            <ordinal>1</ordinal>
+                            <color>YELLOW</color>
+                        </unstableThreshold>
+                    </block>
+                </hudson.plugins.parameterizedtrigger.BlockableBuildTriggerConfig>
+            </configs>
+        </hudson.plugins.parameterizedtrigger.TriggerBuilder>
+        <hudson.tasks.Maven>
+            <targets>build-helper:parse-version versions:set versions:commit scm:checkin</targets>
+            <properties>newVersion=${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}-SNAPSHOT
+connectionUrl=scm:svn:http:/svn.codecentric.de}/test-project
+message=Automatic increment version after release</properties>
+            <mavenName>Maven 3.0.4</mavenName>
+            <jvmOptions></jvmOptions>
+            <usePrivateRepository>false</usePrivateRepository>
+        </hudson.tasks.Maven>
+    </buildSteps>
+</hudson.plugins.promoted__builds.PromotionProcess>
