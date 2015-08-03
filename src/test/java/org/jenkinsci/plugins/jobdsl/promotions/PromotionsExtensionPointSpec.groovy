@@ -22,7 +22,7 @@ class PromotionsExtensionPointSpec extends Specification {
 	def 'promotionJobExtension'() {
 		when:
         DslEnvironment dslEnvironment = new DslEnvironmentImpl();
-		String xml = extensionPoint.promotions({
+		JobProperty jobProperty = extensionPoint.promotions({
             promotion {
                 name('dev')
                 icon('star')
@@ -34,20 +34,15 @@ class PromotionsExtensionPointSpec extends Specification {
 		}, dslEnvironment)
 
 		then:
-        println xml
-		assertXMLEqual('''
-<hudson.plugins.promoted__builds.JobPropertyImpl>
-    <activeProcessNames>
-        <string>dev</string>
-        <string>dev2</string>
-    </activeProcessNames>
-</hudson.plugins.promoted__builds.JobPropertyImpl>''', xml)
+        println jobProperty
+		assert jobProperty.activeProcessNames[0] == "dev"
+		assert jobProperty.activeProcessNames[1] == "dev2"
 	}
 
     def 'promotionExtraXml'() {
         when:
         DslEnvironment dslEnvironment = new DslEnvironmentImpl();
-        String xml = extensionPoint.promotions({
+        JobProperty jobProperty = extensionPoint.promotions({
             promotion {
                 name('dev')
                 icon('star')
@@ -73,14 +68,9 @@ class PromotionsExtensionPointSpec extends Specification {
         extensionPoint.notifyItemCreated(item, dslEnvironment)
 
         then:
-        println xml
-        assertXMLEqual('''
-<hudson.plugins.promoted__builds.JobPropertyImpl>
-    <activeProcessNames>
-        <string>dev</string>
-        <string>dev2</string>
-    </activeProcessNames>
-</hudson.plugins.promoted__builds.JobPropertyImpl>''', xml)
+        println jobProperty
+		assert jobProperty.activeProcessNames[0] == "dev"
+		assert jobProperty.activeProcessNames[1] == "dev2"
 
         String xmlDev = FileUtils.readFileToString(new File(item.getRootDir(), '/promotions/dev/config.xml'));
         println xmlDev
