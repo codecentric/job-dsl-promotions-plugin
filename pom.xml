@@ -37,6 +37,12 @@
 			<version>1.4.7-jenkins-1</version>
 		</dependency>
 		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.spockframework</groupId>
 			<artifactId>spock-core</artifactId>
 			<version>0.7-groovy-1.8</version>
