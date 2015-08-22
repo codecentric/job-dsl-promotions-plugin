@@ -41,6 +41,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                 PromotionsContextHelper contextHelper = (PromotionsContextHelper) dslEnvironment.get("helper");
                 @SuppressWarnings("unchecked")
                 List<String> names = (List<String>) dslEnvironment.get("names");
+              if (names != null) {
                 for (String name : names) {
                         String xml = contextHelper.getSubXml(name);
                         File dir = new File(item.getRootDir(), "promotions/" + name);
@@ -56,6 +57,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                                 throw new IllegalStateException("Error handling extension code", e);
                         }
                 }
+              }
         }
 
         @Override
