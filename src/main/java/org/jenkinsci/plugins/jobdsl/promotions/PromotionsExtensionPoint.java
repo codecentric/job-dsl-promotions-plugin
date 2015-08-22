@@ -41,8 +41,8 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                 PromotionsContextHelper contextHelper = (PromotionsContextHelper) dslEnvironment.get("helper");
                 @SuppressWarnings("unchecked")
                 List<String> names = (List<String>) dslEnvironment.get("names");
-              if (names != null) {
-                for (String name : names) {
+                if (names != null) {
+                    for (String name : names) {
                         String xml = contextHelper.getSubXml(name);
                         File dir = new File(item.getRootDir(), "promotions/" + name);
                         File configXml = Items.getConfigFile(dir).getFile();
@@ -56,8 +56,8 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                         } catch (IOException e) {
                                 throw new IllegalStateException("Error handling extension code", e);
                         }
+                    }
                 }
-              }
         }
 
         @Override
@@ -67,13 +67,15 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                 List<String> newPromotions = (List<String>) dslEnvironment.get("names");
                 File dir = new File(item.getRootDir(), "promotions/");
                 //Delete removed promotions
-                if(newPromotions != null){
+                if (newPromotions != null){
+                    if (dir != null){
                         for (File promotion : dir.listFiles()) {
-                                if(!newPromotions.contains(promotion.getName())){
-                                        promotion.delete();
-                                        LOGGER.log(Level.INFO, String.format("Deleted promotion with name %s for %s", promotion.getName(), item.getName()));
-                                }
+                            if (!newPromotions.contains(promotion.getName())){
+                                promotion.delete();
+                                LOGGER.log(Level.INFO, String.format("Deleted promotion with name %s for %s", promotion.getName(), item.getName()));
+                            }
                         }
+                    }
                 }
                 //Delegate to create-method
                 this.notifyItemCreated(item, dslEnvironment);
