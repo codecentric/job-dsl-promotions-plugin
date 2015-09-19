@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.jobdsl.promotions
 import javaposse.jobdsl.dsl.ContextHelper
 import javaposse.jobdsl.dsl.Job
 import javaposse.jobdsl.dsl.JobManagement
-import javaposse.jobdsl.dsl.JobType
 import javaposse.jobdsl.dsl.WithXmlAction
 
 class PromotionsContextHelper {

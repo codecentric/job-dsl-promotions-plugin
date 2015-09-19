@@ -67,9 +67,10 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                 List<String> newPromotions = (List<String>) dslEnvironment.get("names");
                 File dir = new File(item.getRootDir(), "promotions/");
                 //Delete removed promotions
-                if (newPromotions != null){
-                    if (dir != null){
-                        for (File promotion : dir.listFiles()) {
+                if (newPromotions != null && dir != null){
+                    File[] files = dir.listFiles();
+                    if (files != null) {
+                        for (File promotion : files) {
                             if (!newPromotions.contains(promotion.getName())){
                                 promotion.delete();
                                 LOGGER.log(Level.INFO, String.format("Deleted promotion with name %s for %s", promotion.getName(), item.getName()));
