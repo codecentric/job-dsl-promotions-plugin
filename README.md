@@ -15,8 +15,7 @@ mvn hpi:run
 ### Simple example
 
 ```groovy
-job{
-	name('promotion-job')
+job('promotion-job'){
 	properties{
 		promotions{
 			promotion {
@@ -37,8 +36,7 @@ job{
 ### More complex example
 
 ```groovy
-job{
-	name('complex-promotion-job')
+job('complex-promotion-job'){
 	properties{
 		promotions{
 			promotion {
