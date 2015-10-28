@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.jobdsl.promotions;
 import groovy.lang.Closure;
 import hudson.Extension;
+import hudson.model.AbstractItem;
 import hudson.model.Item;
 import hudson.model.Items;
 import hudson.util.IOUtils;
@@ -37,11 +38,15 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 
         @Override
         public void notifyItemCreated(Item item, DslEnvironment dslEnvironment) {
+            notifyItemCreated(item, dslEnvironment, false);
+        }
+
+        public void notifyItemCreated(Item item, DslEnvironment dslEnvironment, boolean update) {
                 LOGGER.log(Level.INFO, String.format("Creating promotions for %s", item.getName()));
                 PromotionsContextHelper contextHelper = (PromotionsContextHelper) dslEnvironment.get("helper");
                 @SuppressWarnings("unchecked")
                 List<String> names = (List<String>) dslEnvironment.get("names");
-                if (names != null) {
+                if (names != null && names.size() > 0) {
                     for (String name : names) {
                         String xml = contextHelper.getSubXml(name);
                         File dir = new File(item.getRootDir(), "promotions/" + name);
@@ -51,11 +56,21 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                                 InputStream in = new ByteArrayInputStream(xml.getBytes("UTF-8"));
                                 IOUtils.copy(in, configXml);
                                 LOGGER.log(Level.INFO, String.format("Added promotion with name %s for %s", name, item.getName()));
+                                update = true;
                         } catch (UnsupportedEncodingException e) {
                                 throw new IllegalStateException("Error handling extension code", e);
                         } catch (IOException e) {
                                 throw new IllegalStateException("Error handling extension code", e);
                         }
+                    }
+                }
+
+                // Only update if a promotion was actually added, updated, or removed.
+                if(update) {
+                    try {
+                        ((AbstractItem) item).doReload();
+                    } catch(Exception e) {
+                        throw new IllegalStateException("Unable to cast item to AbstractItem and reload config", e);
                     }
                 }
         }
@@ -66,6 +81,7 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                 @SuppressWarnings("unchecked")
                 List<String> newPromotions = (List<String>) dslEnvironment.get("names");
                 File dir = new File(item.getRootDir(), "promotions/");
+                boolean update = false;
                 //Delete removed promotions
                 if (newPromotions != null && dir != null){
                     File[] files = dir.listFiles();
@@ -74,12 +90,14 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
                             if (!newPromotions.contains(promotion.getName())){
                                 promotion.delete();
                                 LOGGER.log(Level.INFO, String.format("Deleted promotion with name %s for %s", promotion.getName(), item.getName()));
+                                update = true;
                             }
                         }
                     }
                 }
+
                 //Delegate to create-method
-                this.notifyItemCreated(item, dslEnvironment);
+                this.notifyItemCreated(item, dslEnvironment, update);
         }
 
 }
