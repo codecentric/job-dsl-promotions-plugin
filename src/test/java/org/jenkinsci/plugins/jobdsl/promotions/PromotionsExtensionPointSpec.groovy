@@ -64,7 +64,9 @@ class PromotionsExtensionPointSpec extends Specification {
                 }
             }
         }, dslEnvironment)
-        FreeStyleProject item = new FreeStyleProject(Jenkins.getInstance(), 'freestyle')
+        FreeStyleProject item = Spy(FreeStyleProject, constructorArgs: [Jenkins.getInstance(), 'freestyle']) {
+            1 * doReload() >> {}
+        }
         extensionPoint.notifyItemCreated(item, dslEnvironment)
 
         then:
