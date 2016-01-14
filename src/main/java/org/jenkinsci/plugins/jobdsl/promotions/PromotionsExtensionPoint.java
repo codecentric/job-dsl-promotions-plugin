@@ -59,11 +59,17 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 				String xml =  Items.XSTREAM2.toXML(promotionProcess);
 				File dir = new File(item.getRootDir(), "promotions/" + name);
 				File configXml = Items.getConfigFile(dir).getFile();
-				configXml.getParentFile().mkdirs();
+				boolean created = configXml.getParentFile().mkdirs();
+				String createUpdate;
+				if(created){
+					createUpdate = "Added";
+				}else{
+					createUpdate = "Updated";
+				}
 				try {
 					InputStream in = new ByteArrayInputStream(xml.getBytes("UTF-8"));
 					IOUtils.copy(in, configXml);
-					LOGGER.log(Level.INFO, String.format("Added promotion with name %s for %s", name, item.getName()));
+					LOGGER.log(Level.INFO, String.format(createUpdate + " promotion with name %s for %s", name, item.getName()));
 					update = true;
 				} catch (UnsupportedEncodingException e) {
 					throw new IllegalStateException("Error handling extension code", e);
@@ -97,9 +103,11 @@ public class PromotionsExtensionPoint extends ContextExtensionPoint {
 			if (files != null) {
 				for (File promotion : files) {
 					if (!newPromotions.contains(promotion.getName())) {
-						promotion.delete();
-						LOGGER.log(Level.INFO, String.format("Deleted promotion with name %s for %s", promotion.getName(), item.getName()));
-						update = true;
+						boolean deleted = promotion.delete();
+						if(deleted){
+							LOGGER.log(Level.INFO, String.format("Deleted promotion with name %s for %s", promotion.getName(), item.getName()));
+							update = true;
+						}
 					}
 				}
 			}

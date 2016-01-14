@@ -86,8 +86,8 @@ public class PromotionProcessConverter implements Converter {
 	}
 
 	private String obtainClassOwnership() {
-		if (classOwnership != null) {
-			return classOwnership;
+		if (this.classOwnership != null) {
+			return this.classOwnership;
 		}
 		if (pm == null) {
 			Jenkins j = Jenkins.getInstance();
@@ -100,7 +100,8 @@ public class PromotionProcessConverter implements Converter {
 		}
 		// TODO: possibly recursively scan super class to discover dependencies
 		PluginWrapper p = pm.whichPlugin(hudson.plugins.promoted_builds.PromotionProcess.class);
-		return p != null ? p.getShortName() + '@' + trimVersion(p.getVersion()) : null;
+		this.classOwnership = p != null ? p.getShortName() + '@' + trimVersion(p.getVersion()) : null;
+		return this.classOwnership;
 	}
 
 	static String trimVersion(String version) {
